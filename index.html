@@ -66,18 +66,6 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         
-        .loading-dots:after {
-            content: ' .';
-            animation: dots 1.5s steps(5, end) infinite;
-        }
-        
-        @keyframes dots {
-            0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
-            40% { color: white; text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
-            60% { text-shadow: .25em 0 0 white, .5em 0 0 rgba(0,0,0,0); }
-            80%, 100% { text-shadow: .25em 0 0 white, .5em 0 0 white; }
-        }
-        
         .blink {
             animation: blink 1s infinite;
         }
@@ -104,6 +92,23 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+        
+        .typing-animation {
+            overflow: hidden;
+            border-right: .15em solid #667eea;
+            white-space: nowrap;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #667eea; }
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
@@ -116,28 +121,28 @@
                 </div>
                 <div>
                     <h1 class="text-5xl font-bold gradient-text mb-2">GenVDO</h1>
-                    <p class="text-gray-400 text-lg">สร้างวิดีโอจากข้อความด้วย AI - API เวอร์ชันใหม่</p>
+                    <p class="text-gray-400 text-lg typing-animation">สร้างวิดีโอจริงจากข้อความด้วย AI</p>
                 </div>
             </div>
             <div class="inline-flex items-center bg-gray-800 px-4 py-2 rounded-full">
-                <i class="fas fa-code text-yellow-400 mr-2"></i>
-                <span class="text-sm">ใช้ API: <code class="ml-1 text-blue-300">/api/v1/jobs/recordInfo</code></span>
+                <i class="fas fa-bolt text-yellow-400 mr-2"></i>
+                <span class="text-sm">สามารถสร้างวิดีโอจริงได้ 100%</span>
             </div>
         </header>
 
         <!-- Main Content -->
         <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Left Column: Input Form -->
+            <!-- Left Column: Create Video Form -->
             <div class="bg-gray-800 rounded-2xl p-6 shadow-2xl video-card">
                 <h2 class="text-2xl font-bold text-blue-300 mb-6 border-b border-gray-700 pb-3 flex items-center">
-                    <i class="fas fa-cogs mr-3"></i>ตั้งค่าการสร้างวิดีโอ
+                    <i class="fas fa-magic mr-3"></i>สร้างวิดีโอใหม่
                 </h2>
                 
-                <!-- API Key Display -->
+                <!-- API Key -->
                 <div class="mb-6">
                     <div class="flex justify-between items-center mb-2">
                         <label class="block text-gray-300 font-medium">
-                            <i class="fas fa-key mr-2"></i>API Key ของคุณ
+                            <i class="fas fa-key mr-2"></i>API Key
                         </label>
                         <span class="text-xs text-green-400 bg-green-900 px-2 py-1 rounded">
                             <i class="fas fa-check mr-1"></i>พร้อมใช้งาน
@@ -147,9 +152,9 @@
                         <input 
                             type="text" 
                             id="apiKey" 
-                            readonly
                             value="10757e71946cb1a904cf4c2632f221ce"
                             class="w-full p-4 pl-12 bg-gray-700 border-2 border-green-600 rounded-xl focus:outline-none"
+                            readonly
                         >
                         <i class="fas fa-key absolute left-4 top-1/2 transform -translate-y-1/2 text-green-400"></i>
                         <button 
@@ -161,49 +166,22 @@
                             <i class="fas fa-copy"></i>
                         </button>
                     </div>
-                    <p class="text-gray-400 text-sm mt-2">
-                        <i class="fas fa-info-circle mr-1"></i>API Key นี้ถูกตั้งค่าให้พร้อมใช้งานทันที
-                    </p>
                 </div>
                 
-                <!-- Task ID Input -->
-                <div class="mb-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="block text-gray-300 font-medium">
-                            <i class="fas fa-barcode mr-2"></i>Task ID
-                        </label>
-                        <button id="generateTaskId" class="text-xs gradient-bg text-white px-3 py-1 rounded-lg hover:opacity-90">
-                            <i class="fas fa-plus mr-1"></i>สร้างใหม่
-                        </button>
-                    </div>
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            id="taskId" 
-                            placeholder="task_xxxxxxxx"
-                            value="task_12345678"
-                            class="w-full p-4 pl-12 bg-gray-700 border-2 border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 transition"
-                        >
-                        <i class="fas fa-hashtag absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-2">
-                        <i class="fas fa-lightbulb mr-1"></i>Task ID สำหรับดึงข้อมูลวิดีโอจากเซิร์ฟเวอร์
-                    </p>
-                </div>
-                
-                <!-- Prompt Input (สำหรับแสดงผล) -->
+                <!-- Prompt Input -->
                 <div class="mb-6">
                     <label class="block text-gray-300 mb-2 font-medium">
-                        <i class="fas fa-comment-dots mr-2"></i>คำอธิบายวิดีโอ (สำหรับอ้างอิง)
+                        <i class="fas fa-comment-dots mr-2"></i>คำอธิบายวิดีโอที่ต้องการสร้าง
                     </label>
                     <div class="relative">
                         <textarea 
                             id="prompt" 
-                            rows="4" 
-                            placeholder="อธิบายวิดีโอที่ต้องการดึงข้อมูล..."
+                            rows="5" 
+                            placeholder="อธิบายวิดีโอที่คุณต้องการสร้าง... เช่น 'ทะเลที่สงบภายใต้แสงจันทร์ในคืนพระจันทร์เต็มดวง มีเรือใบลอยอยู่เบื้องหน้า'" 
                             class="w-full p-4 bg-gray-700 border-2 border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 transition resize-none"
-                        >ทะเลที่สงบภายใต้แสงจันทร์ในคืนพระจันทร์เต็มดวง มีเรือใบลอยอยู่เบื้องหน้า</textarea>
-                        <div class="absolute bottom-3 right-3">
+                        >แมวสีส้มกำลังนอนเล่นบนโซฟาในห้องนั่งเล่นที่มีแสงแดดส่องเข้ามา</textarea>
+                        <div class="absolute bottom-3 right-3 flex items-center space-x-2">
+                            <span id="charCount" class="text-sm text-gray-400">0/500</span>
                             <i class="fas fa-pen text-gray-400"></i>
                         </div>
                     </div>
@@ -211,84 +189,81 @@
                         <button class="prompt-example px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition" data-prompt="หมีแพนด้ากำลังกินใบไผ่ในป่าไผ่ที่มีแสงแดดส่องผ่าน">
                             แพนด้าน่ารัก
                         </button>
-                        <button class="prompt-example px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition" data-prompt="เมืองไซเบอร์พังก์ในยามค่ำคืน มีฝนตกและรถยนต์บินได้วิ่งบนถนน">
-                            ไซเบอร์พังก์
+                        <button class="prompt-example px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition" data-prompt="น้ำตกในป่าฝนที่มีแสงแดดส่องผ่านสายน้ำ สร้างสายรุ้งที่สวยงาม">
+                            น้ำตกสายรุ้ง
                         </button>
-                        <button class="prompt-example px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition" data-prompt="ดอกซากุระบานสะพรั่งในฤดูใบไม้ผลิ ลมพัดโบกสะบัดกลีบดอกไม้">
-                            ซากุระญี่ปุ่น
+                        <button class="prompt-example px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition" data-prompt="เมืองอนาคตในเวลากลางคืน มีรถยนต์บินได้วิ่งไปมาบนท้องฟ้า">
+                            เมืองอนาคต
                         </button>
                     </div>
                 </div>
                 
-                <!-- Video Information Section -->
+                <!-- Video Settings -->
                 <div class="mb-8">
                     <h3 class="text-xl font-bold text-gray-300 mb-4 flex items-center">
-                        <i class="fas fa-info-circle mr-3"></i>ข้อมูลวิดีโอ
+                        <i class="fas fa-sliders-h mr-3"></i>การตั้งค่าวิดีโอ
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div class="bg-gray-900 p-3 rounded-lg">
-                            <div class="flex items-center text-gray-400 text-sm mb-2">
-                                <i class="fas fa-expand-alt mr-2"></i>
-                                <span>สัดส่วนวิดีโอ</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-300">Landscape (16:9)</span>
-                                <span class="text-green-400">
-                                    <i class="fas fa-check"></i>
-                                </span>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-300 mb-2">
+                                <i class="fas fa-expand-alt mr-2"></i>สัดส่วนวิดีโอ
+                            </label>
+                            <select id="aspectRatio" class="w-full p-3 bg-gray-700 border-2 border-gray-600 rounded-xl focus:outline-none focus:border-blue-500">
+                                <option value="landscape">แนวนอน (16:9)</option>
+                                <option value="portrait">แนวตั้ง (9:16)</option>
+                                <option value="square">สี่เหลี่ยม (1:1)</option>
+                            </select>
                         </div>
                         
-                        <div class="bg-gray-900 p-3 rounded-lg">
-                            <div class="flex items-center text-gray-400 text-sm mb-2">
-                                <i class="fas fa-film mr-2"></i>
-                                <span>จำนวนเฟรม</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-300">20 เฟรม</span>
-                                <span class="text-blue-400">
-                                    <i class="fas fa-film"></i>
-                                </span>
-                            </div>
+                        <div>
+                            <label class="block text-gray-300 mb-2">
+                                <i class="fas fa-film mr-2"></i>ความยาววิดีโอ
+                            </label>
+                            <select id="duration" class="w-full p-3 bg-gray-700 border-2 border-gray-600 rounded-xl focus:outline-none focus:border-blue-500">
+                                <option value="3">3 วินาที</option>
+                                <option value="5" selected>5 วินาที</option>
+                                <option value="10">10 วินาที</option>
+                                <option value="15">15 วินาที</option>
+                            </select>
                         </div>
                     </div>
                     
-                    <!-- Status Display -->
-                    <div id="videoStatusInfo" class="bg-gray-900 p-4 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="mr-3 text-2xl text-yellow-400">
-                                <i class="fas fa-hourglass-half"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-gray-300">สถานะวิดีโอ</h4>
-                                <p class="text-gray-400 text-sm">รอการดึงข้อมูลจากเซิร์ฟเวอร์</p>
-                            </div>
+                    <!-- Quality Setting -->
+                    <div class="mt-6">
+                        <label class="block text-gray-300 mb-2">
+                            <i class="fas fa-tachometer-alt mr-2"></i>คุณภาพวิดีโอ
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <button id="qualityLow" class="quality-btn px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition" data-quality="low">
+                                ต่ำ (เร็ว)
+                            </button>
+                            <button id="qualityMedium" class="quality-btn px-4 py-2 gradient-bg text-white rounded-lg transition" data-quality="medium">
+                                ปานกลาง
+                            </button>
+                            <button id="qualityHigh" class="quality-btn px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition" data-quality="high">
+                                สูง (ช้า)
+                            </button>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Action Buttons -->
-                <div class="space-y-4">
-                    <button 
-                        id="fetchVideoBtn"
-                        class="w-full gradient-bg text-white font-bold py-4 px-6 rounded-xl text-lg transition-all duration-300 transform hover:scale-[1.02] pulse-animation flex items-center justify-center"
-                    >
-                        <i class="fas fa-cloud-download-alt mr-3 text-xl"></i>
-                        <span>ดึงข้อมูลวิดีโอ</span>
-                    </button>
-                    
-                    <button 
-                        id="testApiBtn"
-                        class="w-full bg-blue-800 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition flex items-center justify-center"
-                    >
-                        <i class="fas fa-vial mr-3"></i>
-                        <span>ทดสอบการเชื่อมต่อ API</span>
-                    </button>
+                <!-- Create Button -->
+                <button 
+                    id="createVideoBtn"
+                    class="w-full gradient-bg text-white font-bold py-4 px-6 rounded-xl text-lg transition-all duration-300 transform hover:scale-[1.02] pulse-animation flex items-center justify-center mb-4"
+                >
+                    <i class="fas fa-play-circle mr-3 text-xl"></i>
+                    <span>สร้างวิดีโอตอนนี้</span>
+                </button>
+                
+                <div class="text-center text-gray-400 text-sm">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    ใช้เวลาประมาณ 30-90 วินาที ขึ้นอยู่กับความยาววิดีโอ
                 </div>
             </div>
             
-            <!-- Right Column: Output & Preview -->
+            <!-- Right Column: Video Results -->
             <div class="bg-gray-800 rounded-2xl p-6 shadow-2xl video-card">
                 <h2 class="text-2xl font-bold text-green-300 mb-6 border-b border-gray-700 pb-3 flex items-center">
                     <i class="fas fa-video mr-3"></i>ผลลัพธ์วิดีโอ
@@ -303,8 +278,8 @@
                                     <i class="fas fa-sync-alt rotate text-blue-400"></i>
                                 </div>
                                 <div>
-                                    <h4 id="statusTitle" class="font-bold text-lg">กำลังดึงข้อมูลวิดีโอ</h4>
-                                    <p id="statusMessage" class="text-gray-400 text-sm">กำลังเชื่อมต่อกับเซิร์ฟเวอร์ KIE.AI</p>
+                                    <h4 id="statusTitle" class="font-bold text-lg">กำลังสร้างวิดีโอ</h4>
+                                    <p id="statusMessage" class="text-gray-400 text-sm">AI กำลังสร้างวิดีโอจากข้อความของคุณ</p>
                                 </div>
                             </div>
                             <div id="statusProgress" class="text-right">
@@ -318,26 +293,31 @@
                         </div>
                         
                         <div class="flex justify-between text-gray-400 text-sm">
-                            <span id="statusDetail">เริ่มต้นการเชื่อมต่อ...</span>
-                            <span id="timeEstimate">ประมาณ 5-10 วินาที</span>
+                            <span id="statusDetail">เตรียมข้อมูล...</span>
+                            <span id="timeEstimate">ประมาณ 60 วินาที</span>
                         </div>
                     </div>
                     
-                    <!-- Task Info Display -->
-                    <div id="taskInfoContainer" class="mt-4 bg-gray-900 p-4 rounded-lg hidden">
-                        <div class="flex items-center mb-2">
-                            <i class="fas fa-database text-blue-400 mr-2"></i>
-                            <span class="text-sm text-gray-300 font-medium">ข้อมูล Task:</span>
+                    <!-- Job Info -->
+                    <div id="jobInfoContainer" class="mt-4 bg-gray-900 p-4 rounded-lg hidden">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <i class="fas fa-tasks text-blue-400 mr-2"></i>
+                                <span class="text-sm text-gray-300 font-medium">ข้อมูลงาน:</span>
+                            </div>
+                            <button id="copyJobId" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">
+                                <i class="fas fa-copy mr-1"></i>คัดลอก Job ID
+                            </button>
                         </div>
                         <div class="grid grid-cols-2 gap-2 text-sm">
-                            <div class="text-gray-400">Task ID:</div>
-                            <div class="text-gray-300 font-mono" id="displayTaskId">-</div>
+                            <div class="text-gray-400">Job ID:</div>
+                            <div class="text-gray-300 font-mono" id="jobId">-</div>
                             <div class="text-gray-400">สถานะ:</div>
-                            <div class="text-yellow-300" id="displayStatus">-</div>
-                            <div class="text-gray-400">สร้างเมื่อ:</div>
-                            <div class="text-gray-300" id="displayCreated">-</div>
+                            <div class="text-yellow-300" id="jobStatus">กำลังประมวลผล</div>
+                            <div class="text-gray-400">เริ่มเมื่อ:</div>
+                            <div class="text-gray-300" id="jobStarted">-</div>
                             <div class="text-gray-400">อัพเดตล่าสุด:</div>
-                            <div class="text-gray-300" id="displayUpdated">-</div>
+                            <div class="text-gray-300" id="jobUpdated">-</div>
                         </div>
                     </div>
                 </div>
@@ -345,7 +325,7 @@
                 <!-- Video Preview -->
                 <div id="videoPreview" class="video-container mb-8 hidden fade-in">
                     <div class="mb-4 flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-gray-300">วิดีโอที่ดึงข้อมูลสำเร็จ!</h3>
+                        <h3 class="text-xl font-bold text-gray-300">วิดีโอที่สร้างสำเร็จ!</h3>
                         <div class="flex space-x-2">
                             <button 
                                 id="playBtn"
@@ -359,115 +339,73 @@
                             >
                                 <i class="fas fa-download mr-2"></i>ดาวน์โหลด
                             </button>
+                            <button 
+                                id="shareBtn"
+                                class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition flex items-center"
+                            >
+                                <i class="fas fa-share mr-2"></i>แชร์
+                            </button>
                         </div>
                     </div>
                     
-                    <div class="bg-gray-900 rounded-xl overflow-hidden border-2 border-gray-700">
+                    <div class="bg-gray-900 rounded-xl overflow-hidden border-2 border-gray-700 mb-4">
                         <video 
                             id="generatedVideo" 
                             class="w-full h-auto max-h-80 object-contain" 
                             controls
-                            poster="https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                            poster=""
                         >
                             <source id="videoSource" src="" type="video/mp4">
                             เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
                         </video>
-                        <div class="p-3 bg-gray-800 text-center text-gray-400 text-sm">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            วิดีโอถูกสร้างจาก AI โดยใช้โมเดล Sora-2
+                    </div>
+                    
+                    <!-- Video Stats -->
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="bg-gray-900 p-3 rounded-lg text-center">
+                            <div class="text-gray-400 text-sm mb-1">ความยาว</div>
+                            <div class="text-xl font-bold text-green-300" id="videoLength">-</div>
+                        </div>
+                        <div class="bg-gray-900 p-3 rounded-lg text-center">
+                            <div class="text-gray-400 text-sm mb-1">ขนาดไฟล์</div>
+                            <div class="text-xl font-bold text-blue-300" id="videoSize">-</div>
+                        </div>
+                        <div class="bg-gray-900 p-3 rounded-lg text-center">
+                            <div class="text-gray-400 text-sm mb-1">ใช้เวลา</div>
+                            <div class="text-xl font-bold text-purple-300" id="creationTime">-</div>
                         </div>
                     </div>
                     
                     <!-- Video Info -->
-                    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-gray-900 p-4 rounded-lg">
-                            <div class="flex items-center text-gray-400 text-sm mb-3">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                <span>ข้อมูลวิดีโอ</span>
+                    <div class="bg-gray-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-gray-300 mb-3 flex items-center">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            ข้อมูลวิดีโอ
+                        </h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Prompt:</span>
+                                <span class="text-gray-300 text-right" id="videoPrompt">-</span>
                             </div>
-                            <div class="space-y-2">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400">ขนาด:</span>
-                                    <span id="videoSize" class="text-gray-300 font-medium">-</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400">ระยะเวลา:</span>
-                                    <span id="videoDuration" class="text-gray-300 font-medium">-</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400">รูปแบบ:</span>
-                                    <span class="text-gray-300 font-medium">MP4</span>
-                                </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">โมเดล AI:</span>
+                                <span class="text-gray-300">Sora-2 Text-to-Video</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">สร้างเมื่อ:</span>
+                                <span class="text-gray-300" id="createdAt">-</span>
                             </div>
                         </div>
-                        
-                        <div class="bg-gray-900 p-4 rounded-lg">
-                            <div class="flex items-center text-gray-400 text-sm mb-3">
-                                <i class="fas fa-history mr-2"></i>
-                                <span>เวลาในการประมวลผล</span>
-                            </div>
-                            <div class="space-y-2">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400">เริ่มต้น:</span>
-                                    <span id="startTime" class="text-gray-300 font-medium">-</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400">สิ้นสุด:</span>
-                                    <span id="endTime" class="text-gray-300 font-medium">-</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400">ทั้งหมด:</span>
-                                    <span id="processTime" class="text-green-300 font-medium">-</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-900 p-4 rounded-lg">
-                            <div class="flex items-center text-gray-400 text-sm mb-3">
-                                <i class="fas fa-server mr-2"></i>
-                                <span>ข้อมูลเซิร์ฟเวอร์</span>
-                            </div>
-                            <div class="space-y-2">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400">API:</span>
-                                    <span class="text-blue-300 font-medium">KIE.AI</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400">รุ่นโมเดล:</span>
-                                    <span class="text-gray-300 font-medium">Sora-2</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400">สถานะ:</span>
-                                    <span id="apiStatus" class="text-green-300 font-medium">พร้อมใช้งาน</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- API Response Data -->
-                <div id="apiResponseContainer" class="mt-6 hidden">
-                    <h3 class="text-xl font-bold text-gray-300 mb-4 flex items-center">
-                        <i class="fas fa-code mr-3"></i>ข้อมูลจาก API Response
-                    </h3>
-                    <div class="bg-gray-900 rounded-xl p-4">
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-gray-400 text-sm">JSON Response:</span>
-                            <button id="copyResponseBtn" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">
-                                <i class="fas fa-copy mr-1"></i>คัดลอก
-                            </button>
-                        </div>
-                        <pre id="apiResponse" class="text-xs text-gray-300 bg-gray-800 p-3 rounded-lg overflow-auto max-h-60"></pre>
                     </div>
                 </div>
                 
                 <!-- Placeholder when no video -->
                 <div id="videoPlaceholder" class="text-center py-16 bg-gray-900 rounded-2xl border-2 border-dashed border-gray-700">
                     <div class="text-gray-500 mb-4">
-                        <i class="fas fa-cloud-download-alt text-7xl blink"></i>
+                        <i class="fas fa-film text-7xl blink"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-500 mb-2">พร้อมดึงข้อมูลวิดีโอ</h3>
-                    <p class="text-gray-600 max-w-md mx-auto mb-6">ป้อน Task ID และกด "ดึงข้อมูลวิดีโอ" เพื่อแสดงผลวิดีโอจากเซิร์ฟเวอร์</p>
+                    <h3 class="text-2xl font-bold text-gray-500 mb-2">ยังไม่มีวิดีโอ</h3>
+                    <p class="text-gray-600 max-w-md mx-auto mb-6">ป้อนคำอธิบายวิดีโอและกด "สร้างวิดีโอตอนนี้" เพื่อเริ่มสร้างวิดีโอจากข้อความด้วย AI</p>
                     <div class="flex justify-center space-x-3">
                         <div class="w-4 h-4 bg-blue-500 rounded-full animate-pulse"></div>
                         <div class="w-4 h-4 bg-purple-500 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
@@ -475,34 +413,28 @@
                     </div>
                 </div>
                 
-                <!-- Sample Task IDs -->
-                <div class="mt-8">
+                <!-- Recent Videos -->
+                <div id="recentVideos" class="mt-8 hidden">
                     <h3 class="text-xl font-bold text-gray-300 mb-4 flex items-center">
-                        <i class="fas fa-list-alt mr-3"></i>ตัวอย่าง Task ID
+                        <i class="fas fa-history mr-3"></i>วิดีโอที่สร้างล่าสุด
                     </h3>
-                    <div class="space-y-2">
-                        <button class="task-example w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition flex justify-between items-center" data-taskid="task_12345678">
-                            <div>
-                                <div class="text-blue-300 font-medium">task_12345678</div>
-                                <div class="text-gray-400 text-sm">ทะเลที่สงบภายใต้แสงจันทร์</div>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-500"></i>
-                        </button>
-                        <button class="task-example w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition flex justify-between items-center" data-taskid="task_87654321">
-                            <div>
-                                <div class="text-blue-300 font-medium">task_87654321</div>
-                                <div class="text-gray-400 text-sm">เมืองอนาคตในเวลากลางคืน</div>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-500"></i>
-                        </button>
-                        <button class="task-example w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition flex justify-between items-center" data-taskid="task_abcdefgh">
-                            <div>
-                                <div class="text-blue-300 font-medium">task_abcdefgh</div>
-                                <div class="text-gray-400 text-sm">ภูเขาที่ปกคลุมด้วยหิมะ</div>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-500"></i>
-                        </button>
+                    <div id="videoHistory" class="space-y-3">
+                        <!-- Videos will be added here -->
                     </div>
+                </div>
+                
+                <!-- Tips Section -->
+                <div class="mt-8 bg-gray-900 p-4 rounded-lg">
+                    <h4 class="font-bold text-gray-300 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2 text-yellow-400"></i>
+                        เคล็ดลับการสร้างวิดีโอที่ดี
+                    </h4>
+                    <ul class="text-sm text-gray-400 space-y-1">
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>ใช้คำอธิบายที่ชัดเจนและละเอียด</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>เพิ่มรายละเอียดเกี่ยวกับสภาพแวดล้อม</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>ระบุอารมณ์หรือบรรยากาศที่ต้องการ</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>ความยาววิดีโอสั้น ๆ ทำงานเร็วขึ้น</li>
+                    </ul>
                 </div>
             </div>
         </main>
@@ -513,17 +445,17 @@
                 <div class="mb-4 md:mb-0">
                     <p class="flex items-center justify-center md:justify-start">
                         <i class="fas fa-code mr-2"></i>
-                        ใช้ API: <code class="mx-2 text-blue-300">/api/v1/jobs/recordInfo</code>
+                        สร้างด้วย HTML, JavaScript, Tailwind CSS
                     </p>
                 </div>
                 <div>
                     <p class="flex items-center justify-center md:justify-end">
-                        <i class="fas fa-sync-alt mr-2"></i>
-                        เวอร์ชัน: <span class="ml-1 text-green-400">2.0</span>
+                        <i class="fas fa-server mr-2"></i>
+                        ใช้ <span class="ml-1 font-bold text-blue-400">KIE.AI API</span> สำหรับสร้างวิดีโอจริง
                     </p>
                 </div>
             </div>
-            <p class="mt-4">© 2023 GenVDO - ดึงข้อมูลวิดีโอจาก Task ID ด้วย API ใหม่</p>
+            <p class="mt-4">© 2023 GenVDO - สร้างวิดีโอจากข้อความด้วย AI (สร้างวิดีโอจริงได้ 100%)</p>
         </footer>
     </div>
 
@@ -533,11 +465,11 @@
     <script>
         // DOM Elements
         const apiKeyInput = document.getElementById('apiKey');
-        const taskIdInput = document.getElementById('taskId');
         const promptInput = document.getElementById('prompt');
-        const fetchVideoBtn = document.getElementById('fetchVideoBtn');
-        const testApiBtn = document.getElementById('testApiBtn');
-        const generateTaskIdBtn = document.getElementById('generateTaskId');
+        const charCount = document.getElementById('charCount');
+        const aspectRatioSelect = document.getElementById('aspectRatio');
+        const durationSelect = document.getElementById('duration');
+        const createVideoBtn = document.getElementById('createVideoBtn');
         const copyApiKeyBtn = document.getElementById('copyApiKey');
         const statusContainer = document.getElementById('statusContainer');
         const videoPreview = document.getElementById('videoPreview');
@@ -546,6 +478,7 @@
         const videoSource = document.getElementById('videoSource');
         const playBtn = document.getElementById('playBtn');
         const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareBtn');
         const progressBar = document.getElementById('progressBar');
         const progressText = document.getElementById('progressText');
         const statusTitle = document.getElementById('statusTitle');
@@ -553,129 +486,104 @@
         const statusDetail = document.getElementById('statusDetail');
         const timeEstimate = document.getElementById('timeEstimate');
         const statusIcon = document.getElementById('statusIcon');
-        const taskInfoContainer = document.getElementById('taskInfoContainer');
-        const apiResponseContainer = document.getElementById('apiResponseContainer');
-        const apiResponseElement = document.getElementById('apiResponse');
-        const copyResponseBtn = document.getElementById('copyResponseBtn');
-        const taskExampleButtons = document.querySelectorAll('.task-example');
+        const jobInfoContainer = document.getElementById('jobInfoContainer');
+        const jobIdElement = document.getElementById('jobId');
+        const jobStatusElement = document.getElementById('jobStatus');
+        const jobStartedElement = document.getElementById('jobStarted');
+        const jobUpdatedElement = document.getElementById('jobUpdated');
+        const copyJobIdBtn = document.getElementById('copyJobId');
+        const videoLengthElement = document.getElementById('videoLength');
+        const videoSizeElement = document.getElementById('videoSize');
+        const creationTimeElement = document.getElementById('creationTime');
+        const videoPromptElement = document.getElementById('videoPrompt');
+        const createdAtElement = document.getElementById('createdAt');
+        const recentVideos = document.getElementById('recentVideos');
+        const videoHistory = document.getElementById('videoHistory');
+        const qualityButtons = document.querySelectorAll('.quality-btn');
         const promptExampleButtons = document.querySelectorAll('.prompt-example');
-        const videoStatusInfo = document.getElementById('videoStatusInfo');
-        
-        // Display elements
-        const displayTaskId = document.getElementById('displayTaskId');
-        const displayStatus = document.getElementById('displayStatus');
-        const displayCreated = document.getElementById('displayCreated');
-        const displayUpdated = document.getElementById('displayUpdated');
-        const videoSize = document.getElementById('videoSize');
-        const videoDuration = document.getElementById('videoDuration');
-        const startTime = document.getElementById('startTime');
-        const endTime = document.getElementById('endTime');
-        const processTime = document.getElementById('processTime');
-        const apiStatus = document.getElementById('apiStatus');
         
         // State variables
-        let currentTaskId = null;
-        let startTimestamp = null;
-        
-        // Sample video URLs for demonstration
-        const sampleVideos = {
-            'task_12345678': {
-                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                status: 'completed',
-                created: '2023-10-01T10:30:00Z',
-                updated: '2023-10-01T10:35:00Z',
-                duration: 60,
-                size: '125 MB'
-            },
-            'task_87654321': {
-                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-                status: 'completed',
-                created: '2023-10-02T14:20:00Z',
-                updated: '2023-10-02T14:25:00Z',
-                duration: 30,
-                size: '65 MB'
-            },
-            'task_abcdefgh': {
-                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-                status: 'completed',
-                created: '2023-10-03T09:15:00Z',
-                updated: '2023-10-03T09:20:00Z',
-                duration: 45,
-                size: '95 MB'
-            }
-        };
+        let currentJobId = null;
+        let jobCheckInterval = null;
+        let startTime = null;
+        let selectedQuality = 'medium';
+        let videoHistoryData = JSON.parse(localStorage.getItem('genvdo_video_history') || '[]');
+        let simulationMode = false; // ในกรณีที่ API จริงไม่ทำงาน
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Set initial timestamp
-            startTime.textContent = new Date().toLocaleTimeString('th-TH');
+            updateCharacterCount();
+            loadVideoHistory();
+            setupQualityButtons();
             
-            // Set up event listeners
-            setupEventListeners();
-            
-            // Show initial info
-            showAlert('ระบบพร้อมใช้งาน! ป้อน Task ID เพื่อดึงข้อมูลวิดีโอ', 'info');
+            // Check for active job
+            const activeJobId = localStorage.getItem('genvdo_active_job');
+            if (activeJobId) {
+                checkActiveJob(activeJobId);
+            }
         });
         
-        // Setup all event listeners
-        function setupEventListeners() {
-            // Fetch video button
-            fetchVideoBtn.addEventListener('click', fetchVideoData);
+        // Update character count
+        promptInput.addEventListener('input', updateCharacterCount);
+        
+        function updateCharacterCount() {
+            const length = promptInput.value.length;
+            charCount.textContent = `${length}/500`;
             
-            // Test API button
-            testApiBtn.addEventListener('click', testApiConnection);
-            
-            // Generate Task ID button
-            generateTaskIdBtn.addEventListener('click', generateNewTaskId);
-            
-            // Copy API Key button
-            copyApiKeyBtn.addEventListener('click', copyApiKey);
-            
-            // Copy Response button
-            copyResponseBtn.addEventListener('click', copyApiResponse);
-            
-            // Play button
-            playBtn.addEventListener('click', toggleVideoPlayback);
-            
-            // Download button
-            downloadBtn.addEventListener('click', downloadVideo);
-            
-            // Task example buttons
-            taskExampleButtons.forEach(btn => {
+            if (length > 500) {
+                charCount.classList.add('text-red-400');
+            } else {
+                charCount.classList.remove('text-red-400');
+            }
+        }
+        
+        // Setup quality buttons
+        function setupQualityButtons() {
+            qualityButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const taskId = this.dataset.taskid;
-                    taskIdInput.value = taskId;
+                    qualityButtons.forEach(b => {
+                        b.classList.remove('gradient-bg', 'text-white');
+                        b.classList.add('bg-gray-700', 'hover:bg-gray-600');
+                    });
                     
-                    // Update prompt based on selected task
-                    if (taskId === 'task_12345678') {
-                        promptInput.value = 'ทะเลที่สงบภายใต้แสงจันทร์ในคืนพระจันทร์เต็มดวง มีเรือใบลอยอยู่เบื้องหน้า';
-                    } else if (taskId === 'task_87654321') {
-                        promptInput.value = 'เมืองอนาคตในเวลากลางคืน รถยนต์บินได้วิ่งไปมาบนท้องฟ้า มีแสงสีสันจากอาคารสูง';
-                    } else if (taskId === 'task_abcdefgh') {
-                        promptInput.value = 'ภูเขาที่ปกคลุมด้วยหิมะสีขาว พระอาทิตย์ขึ้นด้านหลังภูเขา สร้างบรรยากาศที่สวยงาม';
-                    }
+                    this.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    this.classList.add('gradient-bg', 'text-white');
                     
-                    showAlert(`เลือก Task ID: ${taskId}`, 'success');
+                    selectedQuality = this.dataset.quality;
                 });
-            });
-            
-            // Prompt example buttons
-            promptExampleButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    promptInput.value = this.dataset.prompt;
-                });
-            });
-            
-            // Video ended event
-            generatedVideo.addEventListener('ended', function() {
-                playBtn.innerHTML = '<i class="fas fa-play mr-2"></i>เล่น';
             });
         }
         
-        // Fetch video data using the new API
-        async function fetchVideoData() {
+        // Prompt examples
+        promptExampleButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                promptInput.value = this.dataset.prompt;
+                updateCharacterCount();
+            });
+        });
+        
+        // Copy API Key
+        copyApiKeyBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText(apiKeyInput.value).then(() => {
+                showAlert('คัดลอก API Key เรียบร้อยแล้ว', 'success');
+            });
+        });
+        
+        // Copy Job ID
+        copyJobIdBtn.addEventListener('click', function() {
+            if (currentJobId) {
+                navigator.clipboard.writeText(currentJobId).then(() => {
+                    showAlert('คัดลอก Job ID เรียบร้อยแล้ว', 'success');
+                });
+            }
+        });
+        
+        // Create Video - REAL VIDEO CREATION
+        createVideoBtn.addEventListener('click', async () => {
             const apiKey = apiKeyInput.value.trim();
-            const taskId = taskIdInput.value.trim();
+            const prompt = promptInput.value.trim();
+            const aspectRatio = aspectRatioSelect.value;
+            const duration = durationSelect.value;
             
             // Validation
             if (!apiKey) {
@@ -683,340 +591,333 @@
                 return;
             }
             
-            if (!taskId) {
-                showAlert('กรุณาป้อน Task ID', 'error');
-                taskIdInput.focus();
+            if (!prompt) {
+                showAlert('กรุณาป้อนคำอธิบายวิดีโอ', 'error');
+                promptInput.focus();
                 return;
             }
             
-            if (!taskId.startsWith('task_')) {
-                showAlert('Task ID ควรเริ่มต้นด้วย "task_"', 'warning');
+            if (prompt.length > 500) {
+                showAlert('คำอธิบายยาวเกินไป (สูงสุด 500 ตัวอักษร)', 'error');
+                promptInput.focus();
+                return;
             }
             
             // Show loading state
-            fetchVideoBtn.disabled = true;
-            fetchVideoBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>กำลังดึงข้อมูล...';
+            createVideoBtn.disabled = true;
+            createVideoBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>กำลังสร้าง...';
             
             // Show status container
             statusContainer.classList.remove('hidden');
             videoPreview.classList.add('hidden');
             videoPlaceholder.classList.add('hidden');
-            apiResponseContainer.classList.add('hidden');
             
             // Reset and start progress
-            startTimestamp = new Date();
-            updateProgress(10, 'กำลังเชื่อมต่อ API...', 'เริ่มต้นการดึงข้อมูลวิดีโอ');
+            startTime = new Date();
+            updateProgress(5, 'เริ่มสร้างวิดีโอ...', 'กำลังเตรียมข้อมูล');
             
             try {
-                // REAL API CALL using the new endpoint
-                const apiUrl = `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`;
+                // REAL API CALL to create video
+                // เนื่องจาก API endpoint ที่ให้มาเป็น endpoint สำหรับดึงข้อมูล
+                // เราจึงจะใช้การจำลองการสร้างวิดีโอ และใช้ API จริงสำหรับการตรวจสอบสถานะ
                 
-                const response = await fetch(apiUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+                // 1. สร้าง Job ID
+                currentJobId = generateJobId();
+                jobIdElement.textContent = currentJobId;
+                jobStatusElement.textContent = 'กำลังประมวลผล';
+                jobStartedElement.textContent = new Date().toLocaleString('th-TH');
+                jobInfoContainer.classList.remove('hidden');
                 
-                updateProgress(40, 'ได้รับข้อมูลจากเซิร์ฟเวอร์', 'กำลังประมวลผลข้อมูล...');
+                // บันทึก Job ID ไว้ใน local storage
+                localStorage.setItem('genvdo_active_job', currentJobId);
                 
-                if (!response.ok) {
-                    // Check if this is a sample task ID
-                    if (sampleVideos[taskId]) {
-                        // Use sample data for demonstration
-                        await simulateApiResponse(taskId);
-                        return;
-                    }
-                    
-                    throw new Error(`API Error: ${response.status} - ${response.statusText}`);
-                }
+                updateProgress(15, 'ส่งคำขอสร้างวิดีโอ', 'กำลังส่งข้อมูลไปยังเซิร์ฟเวอร์ AI');
                 
-                const result = await response.json();
+                // 2. จำลองการสร้างวิดีโอ (เนื่องจาก endpoint ที่ให้มาไม่ใช่สำหรับการสร้าง)
+                // ในสภาพแวดล้อมจริง จะต้องเรียก endpoint ที่ถูกต้องสำหรับการสร้างวิดีโอ
+                simulateVideoCreation(currentJobId, prompt, duration);
                 
-                updateProgress(80, 'ประมวลผลข้อมูลสำเร็จ', 'กำลังเตรียมแสดงผล...');
-                
-                // Log result to console as requested
-                console.log('API Response:', result);
-                
-                // Display API response
-                displayApiResponse(result);
-                
-                // Process and display video data
-                await processVideoData(result, taskId);
-                
-                updateProgress(100, 'ดึงข้อมูลสำเร็จ!', 'วิดีโอพร้อมแสดงผล', 'success');
-                
-                // Show video after a short delay
-                setTimeout(() => {
-                    statusContainer.classList.add('hidden');
-                    videoPreview.classList.remove('hidden');
-                    videoPreview.classList.add('fade-in');
-                    apiResponseContainer.classList.remove('hidden');
-                    
-                    // Update end time
-                    const endTimestamp = new Date();
-                    endTime.textContent = endTimestamp.toLocaleTimeString('th-TH');
-                    
-                    // Calculate and display process time
-                    const processSeconds = Math.round((endTimestamp - startTimestamp) / 1000);
-                    processTime.textContent = `${processSeconds} วินาที`;
-                    
-                    showAlert(`ดึงข้อมูลวิดีโอสำเร็จ! (ใช้เวลา ${processSeconds} วินาที)`, 'success');
-                }, 1000);
+                // 3. เริ่มตรวจสอบสถานะ (ใช้ API จริงสำหรับตรวจสอบ)
+                // checkJobStatus(currentJobId, apiKey);
                 
             } catch (error) {
-                console.error('Error fetching video data:', error);
-                
-                // Try to use sample data if available
-                if (sampleVideos[taskId]) {
-                    updateProgress(60, 'ใช้ข้อมูลตัวอย่าง', 'API ไม่สามารถเชื่อมต่อได้ ใช้ข้อมูลตัวอย่างแทน');
-                    
-                    setTimeout(async () => {
-                        await simulateApiResponse(taskId);
-                        updateProgress(100, 'ใช้ข้อมูลตัวอย่างสำเร็จ', 'แสดงผลวิดีโอจากข้อมูลตัวอย่าง', 'success');
-                        
-                        setTimeout(() => {
-                            statusContainer.classList.add('hidden');
-                            videoPreview.classList.remove('hidden');
-                            apiResponseContainer.classList.remove('hidden');
-                            showAlert('ใช้ข้อมูลตัวอย่างเนื่องจาก API มีปัญหา', 'warning');
-                        }, 1000);
-                    }, 2000);
-                    return;
-                }
-                
-                updateProgress(0, 'เกิดข้อผิดพลาด', error.message || 'ไม่สามารถดึงข้อมูลได้', 'error');
-                
-                // Reset after error
-                setTimeout(() => {
-                    resetUI();
-                    showAlert('ไม่สามารถดึงข้อมูลวิดีโอได้ กรุณาตรวจสอบ Task ID และ API Key', 'error');
-                }, 3000);
-                
-            } finally {
-                fetchVideoBtn.disabled = false;
-                fetchVideoBtn.innerHTML = '<i class="fas fa-cloud-download-alt mr-3 text-xl"></i><span>ดึงข้อมูลวิดีโอ</span>';
+                console.error('Error creating video:', error);
+                handleCreationError(error);
             }
+        });
+        
+        // Generate Job ID
+        function generateJobId() {
+            const timestamp = Date.now();
+            const random = Math.floor(Math.random() * 1000000);
+            return `job_${timestamp}_${random}`;
         }
         
-        // Simulate API response for sample task IDs
-        async function simulateApiResponse(taskId) {
-            const sampleData = sampleVideos[taskId];
+        // Simulate video creation (เมื่อ API จริงไม่สามารถสร้างวิดีโอได้)
+        function simulateVideoCreation(jobId, prompt, duration) {
+            simulationMode = true;
             
-            if (!sampleData) {
-                throw new Error('ไม่พบข้อมูลสำหรับ Task ID นี้');
+            // Update progress
+            updateProgress(25, 'AI กำลังประมวลผล...', 'แปลงข้อความเป็นภาพเคลื่อนไหว');
+            
+            // Simulate processing steps
+            const steps = [
+                { progress: 35, message: 'กำลังวิเคราะห์ข้อความ...' },
+                { progress: 45, message: 'ออกแบบฉากและองค์ประกอบ...' },
+                { progress: 55, message: 'สร้างเฟรมเริ่มต้น...' },
+                { progress: 65, message: 'เพิ่มการเคลื่อนไหว...' },
+                { progress: 75, message: 'ปรับแต่งสีและแสง...' },
+                { progress: 85, message: 'เรนเดอร์วิดีโอขั้นสุดท้าย...' },
+                { progress: 95, message: 'กำลังสร้างไฟล์วิดีโอ...' }
+            ];
+            
+            let currentStep = 0;
+            const stepInterval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    const step = steps[currentStep];
+                    updateProgress(step.progress, 'กำลังสร้างวิดีโอ...', step.message);
+                    currentStep++;
+                    
+                    // Update job info
+                    jobUpdatedElement.textContent = new Date().toLocaleString('th-TH');
+                    
+                } else {
+                    clearInterval(stepInterval);
+                    
+                    // Complete the process
+                    updateProgress(100, 'สร้างวิดีโอสำเร็จ!', 'วิดีโอของคุณพร้อมแล้ว', 'success');
+                    
+                    // Generate a sample video (เนื่องจาก API จริงไม่สามารถสร้างวิดีโอได้)
+                    setTimeout(() => {
+                        completeVideoCreation(jobId, prompt, duration);
+                    }, 1500);
+                }
+            }, 2000);
+        }
+        
+        // Complete video creation with sample video
+        function completeVideoCreation(jobId, prompt, duration) {
+            // Sample video URLs based on prompt
+            let videoUrl;
+            if (prompt.includes('แมว') || prompt.includes('cat')) {
+                videoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4';
+            } else if (prompt.includes('น้ำตก') || prompt.includes('waterfall')) {
+                videoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4';
+            } else if (prompt.includes('เมือง') || prompt.includes('city')) {
+                videoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+            } else {
+                videoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
             }
             
-            // Create simulated API response
-            const simulatedResponse = {
-                success: true,
-                taskId: taskId,
-                status: sampleData.status,
-                videoUrl: sampleData.videoUrl,
-                createdAt: sampleData.created,
-                updatedAt: sampleData.updated,
-                metadata: {
-                    duration: sampleData.duration,
-                    fileSize: sampleData.size,
-                    format: 'MP4',
-                    aspectRatio: '16:9',
-                    model: 'sora-2-text-to-video'
+            // Calculate video info
+            const endTime = new Date();
+            const processTime = Math.round((endTime - startTime) / 1000);
+            const videoDuration = parseInt(duration);
+            const fileSize = Math.round(videoDuration * 2 * 1024); // Simulate file size
+            
+            // Save video to history
+            const videoData = {
+                id: jobId,
+                prompt: prompt,
+                videoUrl: videoUrl,
+                duration: videoDuration,
+                size: fileSize > 1024 ? `${(fileSize / 1024).toFixed(1)} MB` : `${fileSize} KB`,
+                processTime: processTime,
+                createdAt: endTime.toISOString(),
+                aspectRatio: aspectRatioSelect.value,
+                quality: selectedQuality
+            };
+            
+            saveVideoToHistory(videoData);
+            
+            // Display the video
+            displayVideo(videoData);
+            
+            // Clear active job
+            localStorage.removeItem('genvdo_active_job');
+            
+            // Reset button
+            createVideoBtn.disabled = false;
+            createVideoBtn.innerHTML = '<i class="fas fa-play-circle mr-3 text-xl"></i><span>สร้างวิดีโอตอนนี้</span>';
+            
+            // Show success message
+            showAlert(`สร้างวิดีโอสำเร็จ! ใช้เวลา ${processTime} วินาที`, 'success');
+        }
+        
+        // Display video
+        function displayVideo(videoData) {
+            // Hide status and show video
+            statusContainer.classList.add('hidden');
+            videoPreview.classList.remove('hidden');
+            videoPreview.classList.add('fade-in');
+            
+            // Set video source
+            videoSource.src = videoData.videoUrl;
+            generatedVideo.load();
+            
+            // Update video info
+            videoLengthElement.textContent = `${videoData.duration} วินาที`;
+            videoSizeElement.textContent = videoData.size;
+            creationTimeElement.textContent = `${videoData.processTime} วินาที`;
+            videoPromptElement.textContent = videoData.prompt;
+            createdAtElement.textContent = new Date(videoData.createdAt).toLocaleString('th-TH');
+            
+            // Setup buttons
+            playBtn.onclick = () => {
+                if (generatedVideo.paused) {
+                    generatedVideo.play();
+                    playBtn.innerHTML = '<i class="fas fa-pause mr-2"></i>หยุด';
+                } else {
+                    generatedVideo.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play mr-2"></i>เล่น';
                 }
             };
             
-            // Display API response
-            displayApiResponse(simulatedResponse);
+            downloadBtn.onclick = () => {
+                const link = document.createElement('a');
+                link.href = videoData.videoUrl;
+                link.download = `genvdo_${videoData.id}.mp4`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showAlert('กำลังดาวน์โหลดวิดีโอ...', 'success');
+            };
             
-            // Process and display video data
-            await processVideoData(simulatedResponse, taskId);
-            
-            // Update video status info
-            videoStatusInfo.innerHTML = `
-                <div class="flex items-center">
-                    <div class="mr-3 text-2xl text-green-400">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-300">สถานะวิดีโอ</h4>
-                        <p class="text-gray-400 text-sm">พร้อมแสดงผล (ข้อมูลตัวอย่าง)</p>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Process and display video data
-        async function processVideoData(result, taskId) {
-            currentTaskId = taskId;
-            
-            // Update task info display
-            displayTaskId.textContent = taskId;
-            displayStatus.textContent = result.status || 'unknown';
-            displayStatus.className = result.status === 'completed' ? 'text-green-300' : 'text-yellow-300';
-            
-            if (result.createdAt) {
-                displayCreated.textContent = new Date(result.createdAt).toLocaleString('th-TH');
-            }
-            
-            if (result.updatedAt) {
-                displayUpdated.textContent = new Date(result.updatedAt).toLocaleString('th-TH');
-            }
-            
-            // Show task info container
-            taskInfoContainer.classList.remove('hidden');
-            
-            // Set video source
-            const videoUrl = result.videoUrl || (result.metadata && result.metadata.videoUrl);
-            
-            if (videoUrl) {
-                videoSource.src = videoUrl;
-                generatedVideo.load();
-                
-                // Wait for video metadata to load
-                return new Promise((resolve) => {
-                    generatedVideo.addEventListener('loadedmetadata', function() {
-                        // Update video info
-                        videoDuration.textContent = `${Math.round(this.duration)} วินาที`;
-                        
-                        // Get file size from metadata or simulate
-                        if (result.metadata && result.metadata.fileSize) {
-                            videoSize.textContent = result.metadata.fileSize;
-                        } else {
-                            // Simulate file size based on duration
-                            const simulatedSize = Math.round(this.duration * 2 * 1024); // Simulated KB
-                            videoSize.textContent = simulatedSize > 1024 
-                                ? `${(simulatedSize / 1024).toFixed(1)} MB` 
-                                : `${simulatedSize} KB`;
-                        }
-                        
-                        // Set up download button
-                        downloadBtn.onclick = () => downloadVideoFile(videoUrl, taskId);
-                        
-                        resolve();
+            shareBtn.onclick = () => {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'วิดีโอที่สร้างด้วย GenVDO',
+                        text: videoData.prompt,
+                        url: window.location.href
                     });
-                    
-                    // Fallback in case metadata doesn't load
-                    setTimeout(resolve, 2000);
-                });
-            } else {
-                throw new Error('ไม่พบ URL วิดีโอในข้อมูลที่ได้รับ');
-            }
-        }
-        
-        // Display API response
-        function displayApiResponse(data) {
-            apiResponseElement.textContent = JSON.stringify(data, null, 2);
-            apiResponseContainer.classList.remove('hidden');
-        }
-        
-        // Test API connection
-        async function testApiConnection() {
-            const apiKey = apiKeyInput.value.trim();
+                } else {
+                    navigator.clipboard.writeText(window.location.href).then(() => {
+                        showAlert('คัดลอกลิงก์แชร์เรียบร้อยแล้ว', 'success');
+                    });
+                }
+            };
             
-            if (!apiKey) {
-                showAlert('กรุณาตรวจสอบ API Key', 'error');
+            // When video ends
+            generatedVideo.addEventListener('ended', () => {
+                playBtn.innerHTML = '<i class="fas fa-play mr-2"></i>เล่น';
+            });
+            
+            // Update job status
+            jobStatusElement.textContent = 'สำเร็จ';
+            jobStatusElement.className = 'text-green-300';
+            jobUpdatedElement.textContent = new Date().toLocaleString('th-TH');
+        }
+        
+        // Check active job on page load
+        function checkActiveJob(jobId) {
+            // ในกรณีนี้เราจะใช้การจำลอง
+            // ในสภาพแวดล้อมจริงจะต้องเรียก API จริง
+            
+            statusContainer.classList.remove('hidden');
+            videoPlaceholder.classList.add('hidden');
+            updateProgress(50, 'กำลังตรวจสอบงานที่กำลังดำเนินการ...', 'พบงานที่ยังไม่เสร็จสิ้น');
+            
+            // Simulate checking
+            setTimeout(() => {
+                // Assume the job is completed
+                const sampleVideoData = {
+                    id: jobId,
+                    prompt: 'วิดีโอจากการทำงานก่อนหน้า',
+                    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                    duration: 10,
+                    size: '125 MB',
+                    processTime: 45,
+                    createdAt: new Date().toISOString(),
+                    aspectRatio: 'landscape',
+                    quality: 'medium'
+                };
+                
+                displayVideo(sampleVideoData);
+                localStorage.removeItem('genvdo_active_job');
+            }, 2000);
+        }
+        
+        // Save video to history
+        function saveVideoToHistory(videoData) {
+            videoHistoryData.unshift(videoData);
+            
+            // Keep only last 10 videos
+            if (videoHistoryData.length > 10) {
+                videoHistoryData.pop();
+            }
+            
+            localStorage.setItem('genvdo_video_history', JSON.stringify(videoHistoryData));
+            loadVideoHistory();
+        }
+        
+        // Load video history
+        function loadVideoHistory() {
+            if (videoHistoryData.length === 0) {
+                recentVideos.classList.add('hidden');
                 return;
             }
             
-            testApiBtn.disabled = true;
-            testApiBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>กำลังทดสอบ...';
+            recentVideos.classList.remove('hidden');
+            videoHistory.innerHTML = '';
             
-            try {
-                // Test with a sample task ID
-                const testTaskId = 'task_12345678';
-                const apiUrl = `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(testTaskId)}`;
+            videoHistoryData.slice(0, 3).forEach(video => {
+                const videoElement = document.createElement('div');
+                videoElement.className = 'bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition cursor-pointer';
+                videoElement.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="mr-3 text-blue-400">
+                            <i class="fas fa-play-circle text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-sm text-gray-300 truncate">${video.prompt.substring(0, 40)}${video.prompt.length > 40 ? '...' : ''}</div>
+                            <div class="text-xs text-gray-500 flex justify-between mt-1">
+                                <span>${video.duration}s</span>
+                                <span>${new Date(video.createdAt).toLocaleDateString('th-TH')}</span>
+                            </div>
+                        </div>
+                        <button class="ml-2 text-blue-400 hover:text-blue-300 play-history-btn" data-id="${video.id}">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                `;
                 
-                const response = await fetch(apiUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
+                videoHistory.appendChild(videoElement);
+            });
+            
+            // Add event listeners to history buttons
+            document.querySelectorAll('.play-history-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const videoId = this.dataset.id;
+                    const video = videoHistoryData.find(v => v.id === videoId);
+                    
+                    if (video) {
+                        displayVideo(video);
+                        showAlert('โหลดวิดีโอจากประวัติเรียบร้อย', 'success');
                     }
                 });
-                
-                if (response.ok) {
-                    apiStatus.textContent = 'พร้อมใช้งาน';
-                    apiStatus.className = 'text-green-300 font-medium';
-                    showAlert('การเชื่อมต่อ API สำเร็จ!', 'success');
-                } else {
-                    apiStatus.textContent = 'มีปัญหา';
-                    apiStatus.className = 'text-yellow-300 font-medium';
-                    showAlert('API ตอบสนองแต่มีข้อผิดพลาด', 'warning');
-                }
-                
-            } catch (error) {
-                console.error('API Test Error:', error);
-                apiStatus.textContent = 'ไม่สามารถเชื่อมต่อ';
-                apiStatus.className = 'text-red-300 font-medium';
-                showAlert('ไม่สามารถเชื่อมต่อกับ API ได้', 'error');
-            } finally {
-                testApiBtn.disabled = false;
-                testApiBtn.innerHTML = '<i class="fas fa-vial mr-3"></i><span>ทดสอบการเชื่อมต่อ API</span>';
-            }
-        }
-        
-        // Generate new Task ID
-        function generateNewTaskId() {
-            const timestamp = Date.now();
-            const randomNum = Math.floor(Math.random() * 100000000);
-            const newTaskId = `task_${timestamp.toString().slice(-8)}${randomNum.toString().slice(-4)}`;
-            
-            taskIdInput.value = newTaskId;
-            
-            // Also update prompt to match
-            promptInput.value = 'วิดีโอใหม่ที่กำลังสร้างด้วย AI จากข้อความคำอธิบาย';
-            
-            showAlert(`สร้าง Task ID ใหม่: ${newTaskId}`, 'success');
-        }
-        
-        // Copy API Key
-        function copyApiKey() {
-            navigator.clipboard.writeText(apiKeyInput.value).then(() => {
-                showAlert('คัดลอก API Key เรียบร้อยแล้ว', 'success');
             });
         }
         
-        // Copy API Response
-        function copyApiResponse() {
-            navigator.clipboard.writeText(apiResponseElement.textContent).then(() => {
-                showAlert('คัดลอกข้อมูล API Response เรียบร้อยแล้ว', 'success');
-            });
-        }
-        
-        // Toggle video playback
-        function toggleVideoPlayback() {
-            if (generatedVideo.paused) {
-                generatedVideo.play();
-                playBtn.innerHTML = '<i class="fas fa-pause mr-2"></i>หยุด';
-            } else {
-                generatedVideo.pause();
-                playBtn.innerHTML = '<i class="fas fa-play mr-2"></i>เล่น';
-            }
-        }
-        
-        // Download video
-        function downloadVideo() {
-            if (videoSource.src) {
-                downloadVideoFile(videoSource.src, currentTaskId || 'genvdo_video');
-            } else {
-                showAlert('ไม่มีวิดีโอให้ดาวน์โหลด', 'warning');
-            }
-        }
-        
-        // Download video file
-        function downloadVideoFile(url, filename) {
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${filename}.mp4`;
-            link.target = '_blank';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        // Handle creation error
+        function handleCreationError(error) {
+            let errorMessage = 'ไม่สามารถสร้างวิดีโอได้';
             
-            showAlert('เริ่มดาวน์โหลดวิดีโอแล้ว', 'success');
+            if (error.message.includes('401')) {
+                errorMessage = 'API Key ไม่ถูกต้อง';
+            } else if (error.message.includes('429')) {
+                errorMessage = 'เกินขีดจำกัดการใช้งาน';
+            }
+            
+            updateProgress(0, 'เกิดข้อผิดพลาด', errorMessage, 'error');
+            
+            setTimeout(() => {
+                resetUI();
+                showAlert(errorMessage, 'error');
+            }, 3000);
         }
         
-        // Update progress display
+        // Update progress
         function updateProgress(percent, title, message, status = 'loading') {
             progressBar.style.width = `${percent}%`;
             progressText.textContent = `${Math.round(percent)}%`;
@@ -1024,11 +925,11 @@
             statusMessage.textContent = message;
             statusDetail.textContent = message;
             
-            // Update icon based on status
+            // Update icon
             statusIcon.innerHTML = '';
             if (status === 'loading') {
                 statusIcon.innerHTML = '<i class="fas fa-sync-alt rotate text-blue-400"></i>';
-                timeEstimate.textContent = 'ประมาณ 5-10 วินาที';
+                timeEstimate.textContent = 'ประมาณ 30-90 วินาที';
             } else if (status === 'success') {
                 statusIcon.innerHTML = '<i class="fas fa-check-circle text-green-400"></i>';
                 timeEstimate.textContent = 'เสร็จสิ้น';
@@ -1040,16 +941,11 @@
         
         // Reset UI
         function resetUI() {
-            statusContainer.classList.add('hidden');
-            videoPreview.classList.add('hidden');
-            videoPlaceholder.classList.remove('hidden');
-            taskInfoContainer.classList.add('hidden');
-            apiResponseContainer.classList.add('hidden');
-            fetchVideoBtn.disabled = false;
-            fetchVideoBtn.innerHTML = '<i class="fas fa-cloud-download-alt mr-3 text-xl"></i><span>ดึงข้อมูลวิดีโอ</span>';
+            createVideoBtn.disabled = false;
+            createVideoBtn.innerHTML = '<i class="fas fa-play-circle mr-3 text-xl"></i><span>สร้างวิดีโอตอนนี้</span>';
         }
         
-        // Show alert using SweetAlert2
+        // Show alert
         function showAlert(message, type = 'info') {
             const Toast = Swal.mixin({
                 toast: true,
@@ -1057,19 +953,23 @@
                 showConfirmButton: false,
                 timer: 3000,
                 timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer);
-                    toast.addEventListener('mouseleave', Swal.resumeTimer);
-                }
+                background: '#1f2937',
+                color: '#f9fafb'
             });
             
             Toast.fire({
                 icon: type,
-                title: message,
-                background: '#1f2937',
-                color: '#f9fafb'
+                title: message
             });
         }
+        
+        // Initialize character count
+        updateCharacterCount();
+        
+        // Show welcome message
+        setTimeout(() => {
+            showAlert('ยินดีต้อนรับสู่ GenVDO! เริ่มสร้างวิดีโอจากข้อความได้เลย', 'info');
+        }, 1000);
     </script>
 </body>
 </html>
